@@ -1,0 +1,50 @@
+<script>
+let activeSubscribe = null;
+class Dep{
+    constructor(value){
+        this.subscribe = new Set()
+        this._value = value 
+    }
+
+    set value(newValue){
+        this._value = newValue
+        this.notify()
+    }
+
+    get value(){
+        this.depend()
+        return this._value
+    }
+
+    notify(){
+        this.subscribe.forEach(effect => {
+            effect()
+        })
+    }
+
+    depend(){
+        if(activeSubscribe){
+            this.subscribe.add(activeSubscribe)
+        }
+    }
+}
+
+function watchEffect(effect){
+    activeSubscribe = effect;
+    effect()
+    activeSubscribe = null
+}
+
+const dep = new Dep('hello')
+
+watchEffect(() => {
+    dep.depend()
+    console.log(dep.value)
+})
+
+dep.value = 'change'
+dep.value = 'change'
+
+
+
+</script>
